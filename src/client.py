@@ -97,30 +97,31 @@ def status(connect_id):
         time.sleep(3)
     
 def send_message(client_socket, message):
-    client_socket.send(message.encode('utf-8'))
-    print(f"[CLIENT] Sent message: {message}")
+    client_socket.send(message)
+    # print(f"[CLIENT] Sent message: {message}")
 
+
+def convert_file_to_byte_code(message):
+    with open(message, 'rb') as file:
+        byte_code = file.read()  # Read the entire PDF as bytes
+    return byte_code
 
 def connect_to_client(connection_id):
     peer = status(connection_id)
-    print(peer['ip'])
-    print(peer['port'])
     try:
         # Create a socket object and connect to the server
-        print('1')
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print('2')
         client_socket.connect((peer['ip'], int(peer['port'])))
-        print('3')
         while True:
             print(">")
             message = input()
             if message == 'end':
-                send_message(client_socket, message)
                 client_socket.close()
                 break
-
-            send_message(client_socket, message)
+            # with open(f'{message}', 'rb') as file:
+                # byte_code = file.read()   
+            # convert_file_to_byte_code(message) 
+            send_message(client_socket, convert_file_to_byte_code(message) )
             response = client_socket.recv(1024).decode('utf-8')
             print(f"[CLIENT] Received response: {response}")
         
