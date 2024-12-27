@@ -3,7 +3,15 @@ import time
 import socket
 import threading
 
-SERVER_HOST = '127.0.0.1'  
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = str(s.getsockname()[0])
+    s.close()
+    return ip
+
+
+SERVER_HOST = get_local_ip()
 
 class Peer:
     def __init__(self, port, ip, id):
@@ -95,11 +103,15 @@ def send_message(client_socket, message):
 
 def connect_to_client(connection_id):
     peer = status(connection_id)
+    print(peer['ip'])
+    print(peer['port'])
     try:
         # Create a socket object and connect to the server
+        print('1')
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print('2')
         client_socket.connect((peer['ip'], int(peer['port'])))
-        
+        print('3')
         while True:
             print(">")
             message = input()
